@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
 
             super.handleMessage(msg);
             if (msg.what == 0x111) {
-                mGameView.getTimer().cancel();
+//                mGameView.getTimer().cancel();
                 int score = msg.getData().getInt("score");
                 showPanel(MainActivity.this, score);
             }
@@ -119,8 +119,8 @@ public class MainActivity extends Activity {
 
         ImageView scoreNum1 = createNumber(38, 190, score % 10);
         ImageView scoreNum2 = createNumber(38, 165, score / 10);
-        ImageView scoreNum3 = createNumber(80, 190, ScoreManager.historyBestScore % 10);
-        ImageView scoreNum4 = createNumber(80, 165, ScoreManager.historyBestScore / 10);
+        ImageView scoreNum3 = createNumber(80, 190, ScoreManager.preferences.getInt("bestScore", 0) % 10);
+        ImageView scoreNum4 = createNumber(80, 165, ScoreManager.preferences.getInt("bestScore", 0) / 10);
         score_panel.addView(scoreNum1);
         score_panel.addView(scoreNum2);
         score_panel.addView(scoreNum3);

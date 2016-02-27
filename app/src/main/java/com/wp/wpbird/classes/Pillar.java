@@ -44,7 +44,7 @@ public class Pillar {
         Bitmap directUpBit = mIconReader.getIcon(directUp).setScaleSize(IconSizeManager.ICON_SIZE).getBitmap(context);
         int wid = directDownBit.getWidth();
         int hei = directDownBit.getHeight() * 2 + IconSizeManager.PILLAR_GAP_HEIGHT;
-        Bitmap diyCanvas = Bitmap.createBitmap(wid, hei, Bitmap.Config.RGB_565);
+        Bitmap diyCanvas = Bitmap.createBitmap(wid, hei, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(diyCanvas);
         canvas.drawBitmap(directDownBit, 0, 0, null);
         canvas.drawBitmap(directUpBit, 0,directDownBit.getHeight() + IconSizeManager.PILLAR_GAP_HEIGHT, null);

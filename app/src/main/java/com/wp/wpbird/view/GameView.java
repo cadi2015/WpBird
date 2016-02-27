@@ -53,6 +53,8 @@ public class GameView extends View {
 
     private int mGameState; //0代表游戏还未开始、 1代表游戏开始、2代表游戏结束
 
+    private boolean mIsStarting;
+
     private int mGameScore;
 
     private boolean mNeedShowOver;
@@ -104,6 +106,8 @@ public class GameView extends View {
         Log.d(TAG, "gameStart()");
         mAlpha -= 100;
         mBird.setGameBeginning(true);
+        mIsStarting = true;
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -182,6 +186,7 @@ public class GameView extends View {
         mIconReader = new IconReader(mContext);
         mGameState = 0;
         mGameScore = 0;
+        mIsStarting = false;
         mNeedShowOver = false;
         mPillars = new ArrayList();
         mPillars.add(new Pillar(mContext));//一个Pillars实例对象当然不够用，我们用ArrayList管理多个实例对象
@@ -198,7 +203,7 @@ public class GameView extends View {
                 if (mGameState != 2) {
                     moveLand();
                 }
-                if (mGameState == 1 && isBirdOverGround()) {
+                if (mIsStarting && isBirdOverGround()) {
                     gameOver();
                 }
 
@@ -258,6 +263,7 @@ public class GameView extends View {
 
     private void gameOver() {
         mGameState = 2;
+        mIsStarting = false;
         GameView.this.setClickable(false);
         mBird.die();
         MainActivity mainActivity = (MainActivity) mContext;
@@ -266,6 +272,7 @@ public class GameView extends View {
         Bundle bundle = new Bundle();
         bundle.putInt("score", mGameScore);
         message.setData(bundle);
+        mTimer.cancel();
         mainActivity.getHandler().sendMessageDelayed(message, 1000);
         mNeedShowOver = true;
     }

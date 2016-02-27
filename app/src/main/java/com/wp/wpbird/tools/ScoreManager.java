@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 public class ScoreManager {
     public static SharedPreferences preferences;
     static SharedPreferences.Editor editor; //Editor内部静态接口引用对象
-    public static int historyBestScore;
 
     public static void init(Context context) {
         preferences = context.getSharedPreferences("flappy_bird_best_score", Context.MODE_PRIVATE);
@@ -17,7 +16,6 @@ public class ScoreManager {
     }
 
     public static void setBestScore(int bestScore) {
-        historyBestScore = bestScore;
         editor.putInt("bestScore", bestScore);
         editor.commit();
     }
