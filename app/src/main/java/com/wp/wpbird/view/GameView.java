@@ -111,7 +111,10 @@ public class GameView extends View {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGameState = 1; //目的是延迟出现水管
+                Log.d(TAG, "gameStart() mGameState = " + mGameState);
+                if (mGameState != 2) {
+                    mGameState = 1; //目的是延迟出现水管
+                }
             }
         }, 1500);  //1.5秒后出现水管
     }
@@ -203,7 +206,12 @@ public class GameView extends View {
                 if (mGameState != 2) {
                     moveLand();
                 }
-                if (mIsStarting && isBirdOverGround()) {
+                if (mGameState != 2 && mIsStarting && isBirdOverGround()) {
+                    gameOver();
+                    return;
+                }
+
+                if(mGameState != 2 && isImpact()) {
                     gameOver();
                 }
 
@@ -249,6 +257,19 @@ public class GameView extends View {
         Log.v(TAG, "mBitmapLand.height = " + mBitmapLand.getHeight());
     }
 
+
+    //碰撞检测，算法不明白啊,坑啊坑，用于判断与障碍物的碰撞
+    private boolean isImpact() {
+        if ((mPillars.get(0).getLoc_X() <= IconSizeManager.BIRD_LOC_X+IconSizeManager.BIRD_REAL_WIDTH+IconSizeManager.BIRD_WIDTH_SPACE && mPillars.get(0).getLoc_X()+IconSizeManager.PILLAR_WIDTH > IconSizeManager.BIRD_LOC_X+IconSizeManager.BIRD_REAL_WIDTH+IconSizeManager.BIRD_WIDTH_SPACE)
+                || (mPillars.get(0).getLoc_X() < IconSizeManager.BIRD_LOC_X+IconSizeManager.BIRD_WIDTH_SPACE && mPillars.get(0).getLoc_X()+IconSizeManager.PILLAR_WIDTH >= IconSizeManager.BIRD_LOC_X+IconSizeManager.BIRD_WIDTH_SPACE)) {
+            if (mBird.getBirdHeight()+IconSizeManager.BIRD_HEIGHT_SPACE <= mPillars.get(0).getLoc_Y()+IconSizeManager.PILLAR_HEIGHT
+                    || mBird.getBirdHeight()+IconSizeManager.BIRD_HEIGHT_SPACE+IconSizeManager.BIRD_REAL_HEIGHT >= mPillars.get(0).getLoc_Y()+IconSizeManager.PILLAR_HEIGHT+IconSizeManager.PILLAR_GAP_HEIGHT) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isBirdOverGround() {
         if (mBird.getBirdHeight() > (ScreenManager.SCREEN_HEIGHT - IconSizeManager.GROUND_HEIGHT - 200)) {
             return true;
@@ -272,8 +293,7 @@ public class GameView extends View {
         Bundle bundle = new Bundle();
         bundle.putInt("score", mGameScore);
         message.setData(bundle);
-        mTimer.cancel();
-        mainActivity.getHandler().sendMessageDelayed(message, 1000);
+        mainActivity.getHandler().sendMessageDelayed(message, 1500);
         mNeedShowOver = true;
     }
 

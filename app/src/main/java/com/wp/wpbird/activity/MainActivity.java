@@ -78,8 +78,8 @@ public class MainActivity extends Activity {
 
             super.handleMessage(msg);
             if (msg.what == 0x111) {
-//                mGameView.getTimer().cancel();
                 int score = msg.getData().getInt("score");
+                mGameView.getTimer().cancel();
                 showPanel(MainActivity.this, score);
             }
 

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 
 import com.wp.wpbird.tools.IconReader;
 import com.wp.wpbird.tools.IconSizeManager;
+import com.wp.wpbird.tools.ScreenManager;
 
 import java.util.Random;
 import java.util.Timer;
@@ -67,32 +68,32 @@ public class Bird {
         return mBirds[mRanNum];
     }
 
-    public void tenesmus () {
+    public void tenesmus() {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if(mGameBeginning) {
+                if (mGameBeginning) {
                     mBirdSpeed = mBirdSpeed + BIRD_GRAVITY;
                     mBirdHeight += mBirdSpeed;
                     mBirdAngle += 2;
 
-                    if(mBirdAngle > 90) {
+                    if (mBirdAngle > 90) {
                         mBirdAngle = 90;
                     }
-                }else {
-                    if( mFlyDelay -- == 0) {
+                } else {
+                    if (mFlyDelay-- == 0) {
                         mFlyDelay = 3;
-                        mBirdHeight += mFlyingNums[mFlyCount = (mFlyCount + 1) % 4] *  (int)(3 * IconSizeManager.ICON_SIZE);
+                        mBirdHeight += mFlyingNums[mFlyCount = (mFlyCount + 1) % 4] * (int) (3 * IconSizeManager.ICON_SIZE);
                     }
                 }
 
-                if (mCountDelay -- == 0) {
+                if (mCountDelay-- == 0) {
                     mCountDelay = 2;
                     mRanNum = mCountNums[mCount = (mCount + 1) % 4]; //好嘛，用取模的方式 就能拿到 0、1、2、3四个索引，然后就能取值0、1、2、1,这么的取到值了
                 }
 
-                }
-        }, 0,BIRD_DELAY);
+            }
+        }, 0, BIRD_DELAY);
     }
 
 
@@ -110,7 +111,7 @@ public class Bird {
     */
 
     public int getBirdAngle() {
-        return  mBirdAngle;
+        return mBirdAngle;
     }
 
 
@@ -118,7 +119,7 @@ public class Bird {
         mBirdHeight = mBirdHeight - IconSizeManager.BIRD_JUMP_HEIGHT;  //改变绘制小鸟的高度 ，即Y轴坐标，GameView在不断绘制，看起来就像鸟飞起来一样
         mBirdAngle = -30; //改变小鸟的角度
         mBirdSpeed = 3;  //速度重新变为3
-        if ( mBirdHeight <= -IconSizeManager.BIRD_WIDTH) {
+        if (mBirdHeight <= -IconSizeManager.BIRD_WIDTH) {
             mBirdHeight = -IconSizeManager.BIRD_WIDTH;
         }
     }
@@ -130,6 +131,25 @@ public class Bird {
     public void die() {
         mGameBeginning = false;
         mTimer.cancel();
+
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(mBirdHeight + IconSizeManager.BIRD_REAL_WIDTH > ScreenManager.SCREEN_HEIGHT - IconSizeManager.GROUND_HEIGHT) {
+                    mBirdHeight = ScreenManager.SCREEN_HEIGHT
+                            - IconSizeManager.GROUND_HEIGHT
+                            - IconSizeManager.BIRD_REAL_WIDTH
+                            - IconSizeManager.BIRD_WIDTH_SPACE
+                            + (int) (3 * IconSizeManager.ICON_SIZE);
+                    mTimer.cancel();
+                }
+                mBirdAngle = 90;
+                mBirdHeight += 10;
+            }
+        }, 0, 10);
+
+
     }
 
 }
