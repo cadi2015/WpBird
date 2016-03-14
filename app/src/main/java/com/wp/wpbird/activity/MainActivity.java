@@ -115,8 +115,16 @@ public class MainActivity extends Activity {
         Log.d(TAG, "score = " + score);
         if (score > bestScore) {
             ScoreManager.setBestScore(score);
+            ImageView bitmapNew = new ImageView(context);
+            bitmapNew.setImageBitmap(mBitmapNew);
+            RelativeLayout.LayoutParams bitmapNewLayout = new RelativeLayout.LayoutParams(mBitmapNew.getWidth(), mBitmapNew.getHeight());
+            bitmapNewLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            bitmapNewLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            bitmapNewLayout.rightMargin = 200;
+            bitmapNewLayout.bottomMargin = 80;
+            bitmapNew.setLayoutParams(bitmapNewLayout);
+            score_panel.addView(bitmapNew);
         }
-
         ImageView scoreNum1 = createNumber(38, 190, score % 10);
         ImageView scoreNum2 = createNumber(38, 165, score / 10);
         ImageView scoreNum3 = createNumber(80, 190, ScoreManager.preferences.getInt("bestScore", 0) % 10);
@@ -125,12 +133,7 @@ public class MainActivity extends Activity {
         score_panel.addView(scoreNum2);
         score_panel.addView(scoreNum3);
         score_panel.addView(scoreNum4);
-//        scoreNum4.setId(4);
 
-//        ImageView highBestNew = new ImageView(context);
-//        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mBitmapNew.getWidth(), mBitmapNew.getHeight());
-//        params.addRule(RelativeLayout.LEFT_OF, scoreNum4.getId());
-//        highBestNew.setLayoutParams(params);
 
         Button btnPlay = new Button(context);
         RelativeLayout.LayoutParams btnPlay_params = new RelativeLayout.LayoutParams(mBitmapBtnPlay.getWidth(), mBitmapBtnPlay.getHeight());

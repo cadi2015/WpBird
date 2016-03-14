@@ -212,7 +212,7 @@ public class GameView extends View {
                 }
 
                 if(mGameState != 2 && isImpact()) {
-                    gameOver();
+//                    gameOver();
                 }
 
                 if (mGameState == 1) {
@@ -271,7 +271,7 @@ public class GameView extends View {
     }
 
     private boolean isBirdOverGround() {
-        if (mBird.getBirdHeight() > (ScreenManager.SCREEN_HEIGHT - IconSizeManager.GROUND_HEIGHT - 200)) {
+        if (mBird.getBirdHeight() > (ScreenManager.SCREEN_HEIGHT - IconSizeManager.GROUND_HEIGHT)) {
             return true;
         }
         return false;
