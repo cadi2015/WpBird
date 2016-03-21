@@ -16,7 +16,7 @@ import java.io.IOException;
 public class Icon {
     private final static String TAG = "Icon";
     private String mIconName;
-
+    private static Bitmap mFullPic; //整张图，使用类变量，所有Icon实例对象，共同使用同一份内存，降低内存占用，赞
     private float mScaleSize = 1;
 
     private int mWidth;
@@ -36,13 +36,15 @@ public class Icon {
 
     public Bitmap getBitmap(Context context) {
         Bitmap bitmap = null;
-
         try {
-            bitmap = BitmapFactory.decodeStream(context.getAssets().open("atlas.png"));
+            if(mFullPic == null) {
+                mFullPic = BitmapFactory.decodeStream(context.getAssets().open("atlas.png")); //静态变量初始化，放在这里，纯属是为了，其实我个人都不暂停放到实例方法里初始化，只是懒的再去优化
+                Log.d(TAG, "mFullPic = " + mFullPic);
+            }
             Matrix matrix = new Matrix();
             matrix.postScale(mScaleSize, mScaleSize);
             Log.d(TAG,  "width = " + mWidth + " height = " + mHeight + " StartX = " + mStartX + " StartY = " + mStartY + " endX = " + mEndX + " endY = " + mEndY);
-            bitmap = Bitmap.createBitmap(bitmap, (int) (mStartX * IconReader.PICTURE_WIDTH + 0.5) , (int) (mStartY * IconReader.PICTURE_HEIGHT + 0.5), mWidth, mHeight, matrix, false);
+            bitmap = Bitmap.createBitmap(mFullPic, (int) (mStartX * IconReader.PICTURE_WIDTH + 0.5) , (int) (mStartY * IconReader.PICTURE_HEIGHT + 0.5), mWidth, mHeight, matrix, false);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -115,14 +115,7 @@ public class MainActivity extends Activity {
         Log.d(TAG, "score = " + score);
         if (score > bestScore) {
             ScoreManager.setBestScore(score);
-            ImageView bitmapNew = new ImageView(context);
-            bitmapNew.setImageBitmap(mBitmapNew);
-            RelativeLayout.LayoutParams bitmapNewLayout = new RelativeLayout.LayoutParams(mBitmapNew.getWidth(), mBitmapNew.getHeight());
-            bitmapNewLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            bitmapNewLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            bitmapNewLayout.rightMargin = 200;
-            bitmapNewLayout.bottomMargin = 80;
-            bitmapNew.setLayoutParams(bitmapNewLayout);
+            ImageView bitmapNew = showNewIcon(context);
             score_panel.addView(bitmapNew);
         }
         ImageView scoreNum1 = createNumber(38, 190, score % 10);
@@ -157,6 +150,18 @@ public class MainActivity extends Activity {
         btnPlay.setOnTouchListener(new MyBtnTouchLis(btnPlay_params, btnPlay_params.bottomMargin, btnPlay));
         btnScore.setOnTouchListener(new MyBtnTouchLis(btnScore_params, btnScore_params.bottomMargin, btnScore));
         btnPlay.setOnClickListener(new MyBtnClick());
+    }
+
+    private ImageView showNewIcon(Context context) {
+        ImageView bitmapNew = new ImageView(context);
+        bitmapNew.setImageBitmap(mBitmapNew);
+        RelativeLayout.LayoutParams bitmapNewLayout = new RelativeLayout.LayoutParams(mBitmapNew.getWidth(), mBitmapNew.getHeight());
+        bitmapNewLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        bitmapNewLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        bitmapNewLayout.rightMargin = 300;
+        bitmapNewLayout.bottomMargin = 100;
+        bitmapNew.setLayoutParams(bitmapNewLayout);
+        return bitmapNew;
     }
 
     private class MyBtnClick implements View.OnClickListener {
