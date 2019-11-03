@@ -8,14 +8,14 @@ import android.view.WindowManager;
  * Created by wp on 2015/11/28.
  */
 public class ScreenManager {
-    public static final String TAG = "ScreenManager";
+    private static final String TAG = "ScreenManager";
     public static int SCREEN_WIDTH;
     public static int SCREEN_HEIGHT;
     public static float SCREEN_DENSITY;
 
     public static void init(WindowManager manager) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(displayMetrics); //将DisplayMetrics实例对象设置当前的屏幕比例
+        manager.getDefaultDisplay().getMetrics(displayMetrics); //拿到的屏幕参数，都放到DisplayMetrics对象里
         SCREEN_WIDTH = displayMetrics.widthPixels;
         SCREEN_HEIGHT = displayMetrics.heightPixels;
         SCREEN_DENSITY = displayMetrics.density;

@@ -69,17 +69,24 @@ public class GameView extends View {
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs); //
         this.mContext = context;
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if (msg.what == 0x444) {
-                    invalidate();
-                }
-            }
-        };
+        mHandler = new MyHandler(this);
         init();
         this.setOnClickListener(new MyClickLis());
+    }
+
+    static class MyHandler extends Handler {
+
+        private View gameView;
+
+        MyHandler(View view) {
+            this.gameView = view;
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 0x444) {
+                gameView.invalidate();
+            }
+        }
     }
 
     private class MyClickLis implements View.OnClickListener {

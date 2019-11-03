@@ -1,7 +1,6 @@
 package com.wp.wpbird.tools;
 
 import android.content.Context;
-import android.os.Debug;
 import android.util.Log;
 
 import com.wp.wpbird.classes.Icon;
@@ -44,9 +43,9 @@ public class IconReader {
         String line = null; //读取一行字符串，指遇到换行符算做一行哦
         try {
             while ((line = mBufferedReader.readLine() ) != null) {
-                String[] eachWord = line.split(" "); //split会返回一个数组实例对象
+                String[] eachWord = line.split(" "); //split会返回一个字符串数组对象
                 Log.d(TAG, "eachWord[0] = " + eachWord[0]);
-                if (eachWord[0].equals(imageName)) {
+                if (eachWord[0].equals(imageName)) { //找到匹配的字符串，都放到Icon对象里，牛逼啊
                     icon.setIconName(imageName);
                     icon.setWidth(Integer.valueOf(eachWord[1]));
                     icon.setHeight(Integer.valueOf(eachWord[2]));
@@ -63,7 +62,7 @@ public class IconReader {
         }
 
         try {
-            mInputStream = mContext.getAssets().open("atlas.txt");  //再得到一个新输入字节流实例对象，目的就是为了每次都可以从头读取字符
+            mInputStream = mContext.getAssets().open("atlas.txt");  //再得到一个新输入字节流实例对象，目的就是为了每次都可以从头读取字符，有点道理哈
         } catch (IOException e) {
             e.printStackTrace();
         }
