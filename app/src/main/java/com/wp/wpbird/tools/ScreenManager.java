@@ -13,6 +13,8 @@ public class ScreenManager {
     public static int SCREEN_HEIGHT;
     public static float SCREEN_DENSITY;
 
+
+
     public static void init(WindowManager manager) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(displayMetrics); //拿到的屏幕参数，都放到DisplayMetrics对象里

@@ -3,6 +3,7 @@ package com.wp.wpbird.classes;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.wp.wpbird.config.GameConfig;
 import com.wp.wpbird.tools.IconReader;
 import com.wp.wpbird.tools.IconSizeManager;
 import com.wp.wpbird.tools.ScreenManager;
@@ -37,6 +38,8 @@ public class Bird {
     private int mBirdSpeed;
     private int mBirdAngle; //小鸟角度
     private int mBirdHeight;
+    private int mBirdBitmapHeight;
+    private int mBirdBimmapWidth;
 
     public Bird(Context context) {
         super();
@@ -45,7 +48,7 @@ public class Bird {
     }
 
     public void init() {
-        mIconReader = new IconReader(mContext);
+        mIconReader = IconReader.getInstance(mContext);
         mBirds = new Bitmap[3];
         Random random = new Random();
         int ranNum = random.nextInt(3);
@@ -60,7 +63,17 @@ public class Bird {
         mBirdHeight = IconSizeManager.BIRD_INIT_LOC_Y;
         mBirdSpeed = 3;
         mTimer = new Timer();
+        mBirdBitmapHeight = mBirds[1].getHeight();
+        mBirdBimmapWidth = mBirds[1].getWidth();
         tenesmus();
+    }
+
+    public int getBirdBitmapHeight(){
+        return mBirdBitmapHeight;
+    }
+
+    public int getBirdBitMapWidth(){
+        return mBirdBimmapWidth;
     }
 
     public Bitmap getBird() {
@@ -74,7 +87,9 @@ public class Bird {
             public void run() {
                 if (mGameBeginning) {
                     mBirdSpeed = mBirdSpeed + BIRD_GRAVITY;
-                    mBirdHeight += mBirdSpeed;
+                    if (!GameConfig.debug) {
+                        mBirdHeight += mBirdSpeed;
+                    }
                     mBirdAngle += 2;
 
                     if (mBirdAngle > 90) {
@@ -148,7 +163,6 @@ public class Bird {
                 mBirdHeight += 10;
             }
         }, 0, 10);
-
 
     }
 

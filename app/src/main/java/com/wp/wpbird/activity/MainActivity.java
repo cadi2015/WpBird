@@ -23,10 +23,13 @@ import com.wp.wpbird.tools.ScoreManager;
 import com.wp.wpbird.tools.ScreenManager;
 import com.wp.wpbird.view.GameView;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by wp on 2015/11/22.
  */
 public class MainActivity extends Activity {
+    public static final int MSG_SHOW_RESULT = 0x111;
     private static final String TAG = "MainActivity";
     private ImageView mBackGround;
     private IconReader mIconReader;
@@ -43,17 +46,23 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
+        mIconReader = IconReader.getInstance(this);
+        ScreenManager.init(getWindowManager());
+        ScoreManager.init(this);
         setContentView(R.layout.activity_main);
         initView();
+        initBitmap();
+        if (mHandler == null) {
+            mHandler = new MyMainHandler(this,mGameView);
+        }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
-    private void init() {
-        mIconReader = new IconReader(this);
-        ScreenManager.init(getWindowManager());
-        IconSizeManager.init();
-        ScoreManager.init(this);
+    private void initBitmap() {
         mBitmapScorePanel = mIconReader.getIcon("score_panel").setScaleSize(IconSizeManager.ICON_SIZE).getBitmap(this);
         mBitmapMedals = new Bitmap[4];
         for (int i = 0; i < mBitmapMedals.length; i++) {
@@ -67,34 +76,37 @@ public class MainActivity extends Activity {
         mBitmapBtnPlay = mIconReader.getIcon("button_play").setScaleSize(IconSizeManager.ICON_SIZE).getBitmap(this);
         mBitmapBtnScore = mIconReader.getIcon("button_score").setScaleSize(IconSizeManager.ICON_SIZE).getBitmap(this);
         mBitmapNew = mIconReader.getIcon("new").setScaleSize(IconSizeManager.ICON_SIZE).getBitmap(this);
-        if (mHandler == null) {
-            mHandler = new MyMainHandler();
-        }
     }
 
-    private class MyMainHandler extends Handler {
+    private static class MyMainHandler extends Handler {
+        private WeakReference<MainActivity> weakMainAct;
+        private WeakReference<GameView> weakGameView;
+        MyMainHandler(MainActivity mainAct,GameView view) {
+            weakMainAct = new WeakReference<>(mainAct);
+            weakGameView = new WeakReference<>(view);
+        }
         @Override
         public void handleMessage(Message msg) {
 
             super.handleMessage(msg);
-            if (msg.what == 0x111) {
+            if (msg.what == MSG_SHOW_RESULT) {
                 int score = msg.getData().getInt("score");
-                mGameView.getTimer().cancel();
-                showPanel(MainActivity.this, score);
+                weakGameView.get().getTimer().cancel();
+                MainActivity mainActivity = weakMainAct.get();
+                mainActivity.showPanel( score);
             }
-
         }
     }
 
     private void initView() {
-        mBackGround = (ImageView) findViewById(R.id.main_iv_bg);
+        mBackGround = findViewById(R.id.main_iv_bg);
         mBackGround.setImageBitmap(BitmapChanger.changeSize(mIconReader.getIcon("bg_day").getBitmap(this), ScreenManager.SCREEN_WIDTH, ScreenManager.SCREEN_HEIGHT));
-        mPanel = (RelativeLayout) findViewById(R.id.main_rl_panel);
-        mGameView = (GameView) findViewById(R.id.main_game_view);
+        mPanel =  findViewById(R.id.main_rl_panel);
+        mGameView = findViewById(R.id.main_game_view);
     }
 
-    private void showPanel(Context context, int score) {
-        RelativeLayout score_panel = new RelativeLayout(context);
+    protected void showPanel(int score) {
+        RelativeLayout score_panel = new RelativeLayout(this);
         RelativeLayout.LayoutParams score_panel_params = new RelativeLayout.LayoutParams(mBitmapScorePanel.getWidth(), mBitmapScorePanel.getHeight());
         score_panel_params.topMargin = (ScreenManager.SCREEN_HEIGHT - mBitmapScorePanel.getHeight()) / 2;
         score_panel_params.addRule(RelativeLayout.CENTER_IN_PARENT);
@@ -102,8 +114,7 @@ public class MainActivity extends Activity {
         score_panel.setLayoutParams(score_panel_params);
         Log.d(TAG, "…………………showPanel(Context context)………………");
 
-
-        ImageView medal = new ImageView(context);
+        ImageView medal = new ImageView(this);
         RelativeLayout.LayoutParams medal_params = new RelativeLayout.LayoutParams(mBitmapMedals[0].getWidth(), mBitmapMedals[0].getHeight());
         medal_params.topMargin = (int) (44 * IconSizeManager.ICON_SIZE);
         medal_params.leftMargin = (int) (30 * IconSizeManager.ICON_SIZE);
@@ -115,7 +126,7 @@ public class MainActivity extends Activity {
         Log.d(TAG, "score = " + score);
         if (score > bestScore) {
             ScoreManager.setBestScore(score);
-            ImageView bitmapNew = showNewIcon(context);
+            ImageView bitmapNew = showNewIcon(this);
             score_panel.addView(bitmapNew);
         }
         ImageView scoreNum1 = createNumber(38, 190, score % 10);
@@ -128,7 +139,7 @@ public class MainActivity extends Activity {
         score_panel.addView(scoreNum4);
 
 
-        Button btnPlay = new Button(context);
+        Button btnPlay = new Button(this);
         RelativeLayout.LayoutParams btnPlay_params = new RelativeLayout.LayoutParams(mBitmapBtnPlay.getWidth(), mBitmapBtnPlay.getHeight());
         btnPlay_params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         btnPlay_params.leftMargin = (ScreenManager.SCREEN_WIDTH - mBitmapBtnPlay.getWidth()) / 8;
@@ -136,7 +147,7 @@ public class MainActivity extends Activity {
         btnPlay.setBackgroundDrawable(new BitmapDrawable(mBitmapBtnPlay));
         btnPlay.setLayoutParams(btnPlay_params);
 
-        Button btnScore = new Button(context);
+        Button btnScore = new Button(this);
         RelativeLayout.LayoutParams btnScore_params = new RelativeLayout.LayoutParams(mBitmapBtnScore.getWidth(), mBitmapBtnScore.getHeight());
         btnScore.setBackgroundDrawable(new BitmapDrawable(mBitmapBtnScore));
         btnScore_params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
@@ -198,7 +209,7 @@ public class MainActivity extends Activity {
                 params.bottomMargin = btnBottom;
             }
             btn.setLayoutParams(params);
-            return false;  //这里的返回值很重要，当一个View有两个事件监听时(触摸与点击）,true代表事件完毕，不用传播，这样Click就回调不到，Android操作系统牛逼
+            return false;  //这里的返回值很重要，当一个View有两个事件监听时(触摸与点击）,true代表事件完毕，不用传播，这样Click就回调不到(因为它是在onTouchEvent中调用的呀)，Android操作系统牛逼
         }
     }
 

@@ -27,7 +27,12 @@ public class IconSizeManager {
     public static int BIRD_REAL_WIDTH;
     public static int BIRD_WIDTH_SPACE;
     public static int BIRD_HEIGHT_SPACE;
-    public static void init() {  //用静态方法初始化
+
+    static {
+        init();
+    }
+
+    private static void init() {  //用静态方法初始化
         ICON_SIZE = ScreenManager.SCREEN_DENSITY * 1.3f;
         BIRD_LOC_X = (int) (ScreenManager.SCREEN_WIDTH * 1.0 / 5 );
         BIRD_TURNING_POINT_X = (int) (24 * ICON_SIZE);

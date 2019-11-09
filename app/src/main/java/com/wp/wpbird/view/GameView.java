@@ -24,18 +24,24 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.wp.wpbird.config.GameConfig.GAME_SPEED;
+import static com.wp.wpbird.config.GameConfig.GAME_STATUS_OVER;
+import static com.wp.wpbird.config.GameConfig.GAME_STATUS_READY;
+import static com.wp.wpbird.config.GameConfig.INIT_SCORE;
+import static com.wp.wpbird.config.GameConfig.SHOW_RESULT_DELAY;
+
 
 /**
  * Created by wp on 2015/12/6.
  */
 public class GameView extends View {
     private static final String TAG = "GameView";
+    private static final int MSG_VIEW_INVALIDATE = 0x444;
     private Bird mBird;
     private Paint mPaint;
     private Context mContext;
     private Timer mTimer;
     private Handler mHandler;
-    private final static int GAME_SPEED = 10;
 
     private IconReader mIconReader;
     private Bitmap mBitmapLand;
@@ -67,27 +73,29 @@ public class GameView extends View {
      * @param attrs   传入一个AttributeSet实例对象
      */
     public GameView(Context context, AttributeSet attrs) {
-        super(context, attrs); //
+        super(context, attrs);
         this.mContext = context;
-        mHandler = new MyHandler(this);
+        mHandler = new InvalidateHandler(this);
         init();
         this.setOnClickListener(new MyClickLis());
     }
 
-    static class MyHandler extends Handler {
+    static class InvalidateHandler extends Handler {
 
         private View gameView;
 
-        MyHandler(View view) {
+        InvalidateHandler(View view) {
             this.gameView = view;
         }
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 0x444) {
+            if (msg.what == MSG_VIEW_INVALIDATE) {
                 gameView.invalidate();
             }
         }
     }
+
+
 
     private class MyClickLis implements View.OnClickListener {
 
@@ -103,7 +111,7 @@ public class GameView extends View {
 
     private void gameGoing() {
 
-        if (mGameState == 0) {
+        if (mGameState == GAME_STATUS_READY) {
             gameStart();
         }
         mBird.jump();
@@ -133,6 +141,32 @@ public class GameView extends View {
      * @param canvas
      */
 
+
+    private void drawNum(Canvas canvas,int score) {
+        int offset = 0;
+        if (score >= 10) {
+            offset = 110;
+        }
+        float baseLeft = ScreenManager.SCREEN_WIDTH / 2 - mScoreNums[2].getWidth() / 2;
+        float baseTop = ScreenManager.SCREEN_HEIGHT / 8;
+
+
+        drawNumWithLocation(canvas,mScoreNums[score % 10],baseLeft + offset,baseTop,mPaint);
+
+        if (score >= 10 && score < 100) {
+            drawNumWithLocation(canvas,mScoreNums[score / 10],baseLeft,baseTop,mPaint);
+        }
+
+        if (score >= 100) {
+            drawNumWithLocation(canvas,mScoreNums[(score / 10) % 10],baseLeft,baseTop,mPaint);
+            drawNumWithLocation(canvas,mScoreNums[score / 100],baseLeft - offset,baseTop,mPaint);
+        }
+    }
+
+    private void drawNumWithLocation (Canvas canvas,Bitmap bitmap,float left,float top, Paint paint) {
+        canvas.drawBitmap(bitmap,left,top,paint);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -145,10 +179,7 @@ public class GameView extends View {
         }
 
         if (!mNeedShowOver) {
-            canvas.drawBitmap(mScoreNums[mGameScore % 10], ScreenManager.SCREEN_WIDTH / 2 - mScoreNums[0].getWidth() / 2 + 30, ScreenManager.SCREEN_HEIGHT / 8, mPaint); //绘制得分
-            if (mGameScore >= 10) {
-                canvas.drawBitmap(mScoreNums[mGameScore / 10], ScreenManager.SCREEN_WIDTH / 2 - mScoreNums[0].getWidth(), ScreenManager.SCREEN_HEIGHT / 8, mPaint);
-            }
+            drawNum(canvas,mGameScore);
         }
 
 
@@ -193,9 +224,9 @@ public class GameView extends View {
         }
         mPaint = new Paint();
         mTimer = new Timer();
-        mIconReader = new IconReader(mContext);
-        mGameState = 0;
-        mGameScore = 0;
+        mIconReader = IconReader.getInstance(mContext);
+        mGameState = GAME_STATUS_READY;
+        mGameScore = INIT_SCORE;
         mIsStarting = false;
         mNeedShowOver = false;
         mPillars = new ArrayList();
@@ -210,10 +241,10 @@ public class GameView extends View {
         mTimer.schedule(new TimerTask() {   //匿名内部类 , 匿名实例对象,呵呵
             @Override
             public void run() {
-                if (mGameState != 2) {
+                if (mGameState != GAME_STATUS_OVER) {
                     moveLand();
                 }
-                if (mGameState != 2 && mIsStarting && isBirdOverGround()) {
+                if (mGameState != GAME_STATUS_OVER && mIsStarting && isBirdOverGround()) {
                     gameOver();
                     return;
                 }
@@ -240,7 +271,7 @@ public class GameView extends View {
                     mGameScore++;
                     mPillars.get(0).setPassed(true);
                 }
-                mHandler.sendEmptyMessage(0x444);
+                mHandler.sendEmptyMessage(MSG_VIEW_INVALIDATE);
             }
         }, 0, GAME_SPEED);
 
@@ -278,7 +309,7 @@ public class GameView extends View {
     }
 
     private boolean isBirdOverGround() {
-        if (mBird.getBirdHeight() > (ScreenManager.SCREEN_HEIGHT - IconSizeManager.GROUND_HEIGHT)) {
+        if (mBird.getBirdHeight() > (ScreenManager.SCREEN_HEIGHT - IconSizeManager.GROUND_HEIGHT - mBird.getBirdBitMapWidth())) {
             return true;
         }
         return false;
@@ -290,17 +321,17 @@ public class GameView extends View {
     }
 
     private void gameOver() {
-        mGameState = 2;
+        mGameState = GAME_STATUS_OVER;
         mIsStarting = false;
         GameView.this.setClickable(false);
         mBird.die();
         MainActivity mainActivity = (MainActivity) mContext;
         Message message = new Message();
-        message.what = 0x111;
+        message.what = MainActivity.MSG_SHOW_RESULT;
         Bundle bundle = new Bundle();
         bundle.putInt("score", mGameScore);
         message.setData(bundle);
-        mainActivity.getHandler().sendMessageDelayed(message, 1500);
+        mainActivity.getHandler().sendMessageDelayed(message, SHOW_RESULT_DELAY);
         mNeedShowOver = true;
     }
 

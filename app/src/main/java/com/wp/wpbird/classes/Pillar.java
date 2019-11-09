@@ -24,11 +24,8 @@ public class Pillar {
         init(context);
     }
 
-
     private void init(Context context) {
-        if (mIconReader == null) {
-            mIconReader = new IconReader(context);   //其实我感觉放在静态代码块里初始化更好
-        }
+        mIconReader = IconReader.getInstance(context);
         if (mBitmapNorPill == null) {
             mBitmapNorPill = readBitmap(context, "pipe_down", "pipe_up"); //就在类第一次加载的时候(第一次创建实例对象的时候），读取图片，就行了，不然有卡顿的bug，每次你都
         }

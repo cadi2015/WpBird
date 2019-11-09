@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="E:\wpBird\WpBird\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\libs\internal_impl-23.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8bd336eeae661e8311330284897ee07f8ebaa297">
+        <dex dex="E:\wpBird\WpBird\app\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-6a16b04d224279afc1d35a6a47f8da159fd5f164.jar" />
+    </item>
+    <item
+        jar="E:\wpBird\WpBird\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8413c27b45b7fe61dca4a98159f65e2cee215f5a">
+        <dex dex="E:\wpBird\WpBird\app\build\intermediates\pre-dexed\debug\classes-76afe5caa075a442fa33cdc32d0aecd4c5eb2e3f.jar" />
+    </item>
+    <item
+        jar="E:\Users\cadi\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.0\support-annotations-23.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="990e7f98a7bad86a40b1f0bcfeb039023afd0839">
+        <dex dex="E:\wpBird\WpBird\app\build\intermediates\pre-dexed\debug\support-annotations-23.0.0-22f0248d281e940becc42a64d9997677c6010116.jar" />
+    </item>
+    <item
+        jar="E:\wpBird\WpBird\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4fcf0b1879f8caf497c073e1432d398e9e2988c1">
+        <dex dex="E:\wpBird\WpBird\app\build\intermediates\pre-dexed\debug\classes-73c02b5104e6fa0478e6c2a476bdb90006c3b779.jar" />
+    </item>
+
+</items>

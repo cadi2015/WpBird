@@ -4,7 +4,8 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id = "@+id/main_iv_bg"/>
+        android:id = "@+id/main_iv_bg"
+        android:scaleType="centerCrop"/>
 
     <com.wp.wpbird.view.GameView
         android:layout_width="match_parent"

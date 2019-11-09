@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by wp on 2015/11/22.
@@ -17,20 +18,31 @@ public class IconReader {
     public static final int PICTURE_WIDTH = 1024;
     public static final int PICTURE_HEIGHT = 1024;
 
-    private Context mContext;
-    private InputStream mInputStream; //得到一个输入字节流引用对象
+    private InputStream mInputStream; //得到一个输入字节流引用
     private static final String TAG = "IconReader";
     private BufferedReader mBufferedReader;
-    public IconReader(Context context) {
+    private WeakReference<Context> mWeakContext;
+    private IconReader(Context context) {
         super();
-        mContext = context;
+        mWeakContext = new WeakReference<>(context);
         try {
-            mInputStream = mContext.getAssets().open("atlas.txt"); //getAssets方法得到一个AssetsManager实例对象，再调用open方法返回一个InputStream实例对象
-
+            mInputStream = openTxtFile(mWeakContext.get()); //getAssets方法得到一个AssetsManager实例对象，再调用open方法返回一个InputStream实例对象
         } catch (IOException e){
             e.printStackTrace();
             Log.d(TAG, TAG + "atlas.txt");
         }
+    }
+
+    private InputStream openTxtFile(Context context) throws IOException{
+        return  context.getAssets().open("atlas.txt");
+    }
+
+    private static IconReader instance;
+    public static IconReader getInstance(Context context){
+        if (instance == null) {
+            instance = new IconReader(context);
+        }
+        return instance;
     }
 
 
@@ -62,7 +74,7 @@ public class IconReader {
         }
 
         try {
-            mInputStream = mContext.getAssets().open("atlas.txt");  //再得到一个新输入字节流实例对象，目的就是为了每次都可以从头读取字符，有点道理哈
+            mInputStream = openTxtFile(mWeakContext.get());//再得到一个新输入字节流实例对象，目的就是为了每次都可以从头读取字符，有点道理哈
         } catch (IOException e) {
             e.printStackTrace();
         }
